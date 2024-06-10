@@ -71,10 +71,10 @@ class FileStorage:
         
     def get(self, cls, id):
         """ retrieve one object"""
-        result = {}
-        if cls in classes:
-            cls_all = self.all(cls)
-            for key, val in cls_all.items():
-                if id == val.id:
-                    result[key] = val
-            return result
+        if cls in classes.values():
+            cls_all = models.storage.all(cls)
+            for val in cls_all.values():
+                if value.id == id:
+                    return value
+        else:
+            return None
