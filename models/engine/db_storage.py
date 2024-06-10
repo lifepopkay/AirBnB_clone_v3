@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
 Contains the class DBStorage
+where values are stored in a database
 """
 
 import models

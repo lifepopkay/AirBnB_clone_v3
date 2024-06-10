@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """
 Contains the FileStorage class
+where our storage stores values as file
 """
-
 import json
 import models
 from models.amenity import Amenity
