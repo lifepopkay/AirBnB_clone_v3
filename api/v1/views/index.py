@@ -15,6 +15,8 @@ def view_status():
     """Returns a JSON"""
     response = jsonify({"status": "OK"})
     response.headers["Content-Type"] = "application/json"
+    response.status_code = 200
+    
     return response
 
 

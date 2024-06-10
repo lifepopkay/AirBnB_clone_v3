@@ -21,13 +21,15 @@ port = getenv("HBNB_API_PORT", "5000")
 
 @app.teardown_appcontext
 def teardown(exception):
-        """Cleanup operations"""
-        storage.close()
+  """Cleanup operations"""
+  storage.close()
 
 @app.errorhandler(404)
 def not_found(error):
-        return jsonify({"error": "Not found"}), 404
+  data = {"error": "Not found"}
+  response =  jsonify(data)
+  response.status_code = 404
 
 
 if __name__ == "__main__":
-        app.run(host, port, threaded=True, debug=True)
+  app.run(host, port, threaded=True, debug=True)
