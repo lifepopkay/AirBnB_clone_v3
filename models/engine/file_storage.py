@@ -71,11 +71,24 @@ class FileStorage:
         self.reload()
 
     def get(self, cls, id):
-        """ retrieve one object"""
-        if cls in classes.values():
-            cls_all = models.storage.all(cls)
-            for val in cls_all.values():
-                if val.id == id:
-                    return val
-        else:
-            return None
+        """
+        fetches specific object
+        :param cls: class of object as string
+        :param id: id of object as string
+        :return: found object or None
+        """
+        all_class = self.all(cls)
+
+        for obj in all_class.values():
+            if id == str(obj.id):
+                return obj
+
+        return None
+
+    def count(self, cls=None):
+        """
+        count of how many instances of a class
+        :param cls: class name
+        :return: count of instances of a class
+        """
+        return len(self.all(cls))
