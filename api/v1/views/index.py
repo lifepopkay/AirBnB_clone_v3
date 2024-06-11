@@ -20,12 +20,14 @@ def view_status():
     return response
 
 
+"""
 @app_views.route('/stats', strict_slashes=False)
 def storage_stats():
-    """Returns a JSON"""
+    Returns a JSON
     dict = {}
     for cls, name in classes.items():
         dict.update({name: storage.count(cls)})
         response = jsonify(dict)
         response.headers["Content-Type"] = "application/json"
         return response
+"""
