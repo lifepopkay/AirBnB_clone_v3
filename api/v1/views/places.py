@@ -10,42 +10,42 @@ from models.place import Place
 
 
 @app_views.route('/cities/<id>/places',
-                         strict_slashes=False,
+                 strict_slashes=False,
                                           methods=['GET', 'POST'])
 def view_places(id):
-        """Returns a list of all places of a city, or delete a
-            place if a given id
-                """
-                    city = storage.get(City, id)
-                        user = storage.get(User, id)
-
-                            if city is None:
-                                        return abort(404)
-
-                                        if request.method == 'GET':
-
-                                                    list = []
-                                                            for place in city.places:
-                                                                            list.append(place.to_dict())
-                                                                                    return jsonify(list)
-
-                                                                                    if request.method == 'POST':
-                                                                                                # Get the attributes from the request
-                                                                                                        if user is None:
-                                                                                                                        return abort(404)
-
-                                                                                                                            data = request.get_json()
-
-                                                                                                                                    if isinstance(data, dict):
-                                                                                                                                                    pass
-                                                                                                                                                        else:
-                                                                                                                                                                        return jsonify({"error": "Not a JSON"}), 400
-
-                                                                                                                                                                            if 'name' not in data.keys():
-                                                                                                                                                                                            return jsonify({'error': 'Missing name'}), 400
-
-                                                                                                                                                                                                if 'user_id' not in data.keys():
-                                                                                                                                                                                                                return jsonify({'error': 'Missing user_id'}), 400
+  """Returns a list of all places of a city, or delete a
+  place if a given id
+  """
+  city = storage.get(City, id)
+  user = storage.get(User, id)
+  
+  if city is None:
+    return abort(404)
+    
+    if request.method == 'GET':
+      
+      list = []
+      for place in city.places:
+        list.append(place.to_dict())
+        return jsonify(list)
+        
+        if request.method == 'POST':
+          # Get the attributes from the request
+          if user is None:
+            return abort(404)
+            
+            data = request.get_json()
+            
+            if isinstance(data, dict):
+              pass
+            else:
+              return jsonify({"error": "Not a JSON"}), 400
+              
+              if 'name' not in data.keys():
+                return jsonify({'error': 'Missing name'}), 400
+                
+                if 'user_id' not in data.keys():
+                  return jsonify({'error': 'Missing user_id'}), 400
 
                                                                                                                                                                                                                     data.update({"place_id": id})
 
