@@ -46,22 +46,22 @@ def delete_city(city_id):
 
 if city is None:
   abort(404)
+  
+  city.delete()
+  storage.save()
+  return jsonify({})
 
-                                                                                            city.delete()
-                                                                                                storage.save()
-                                                                                                    return jsonify({})
 
+# POST
+@app_views.route('/states/<string:state_id>/cities', methods=['POST'],
+                 strict_slashes=False)
+@swag_from('documentation/city/post.yml', methods=['POST'])
+def create_city(state_id):
+  """Creates new City object"""
+  state = storage.get(State, state_id)
 
-                                                                                                # POST
-                                                                                                @app_views.route('/states/<string:state_id>/cities', methods=['POST'],
-                                                                                                                         strict_slashes=False)
-                                                                                                @swag_from('documentation/city/post.yml', methods=['POST'])
-                                                                                                def create_city(state_id):
-                                                                                                        """Creates new City object"""
-                                                                                                            state = storage.get(State, state_id)
-
-                                                                                                                if state is None:
-                                                                                                                            abort(404)
+if state is None:
+  abort(404)
 
                                                                                                                                 if not request.get_json():
                                                                                                                                             return make_response(jsonify({"error": "Not a JSON"}), 400)
