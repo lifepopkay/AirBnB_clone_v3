@@ -10,7 +10,7 @@ classes = {"Amenity": "amenities","City": "cities",
            "User": "users"}
 
 
-@app_views.route('/status', strict_slashes=False)
+@app_views.route('/status', methods=['GET'], strict_slashes=False)
 def view_status():
     """Returns a JSON"""
     response = jsonify({"status": "OK"})
@@ -20,7 +20,7 @@ def view_status():
     return response
 
 
-@app_views.route('/stats', strict_slashes=False)
+@app_views.route('/stats', method=['GET'], strict_slashes=False)
 def storage_stats():
     """Returns a JSON"""
     dict = {}
