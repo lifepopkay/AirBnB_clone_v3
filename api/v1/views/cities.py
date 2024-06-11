@@ -10,42 +10,42 @@ from flasgger.utils import swag_from
 
 # GET
 @app_views.route('/states/<string:state_id>/cities',
-                         methods=['GET'], strict_slashes=False)
+                 methods=['GET'], strict_slashes=False)
 @swag_from('documentation/city/get.yml', methods=['GET'])
 def get_cities(state_id):
-        """Retrieve all City objects"""
-            state = storage.get(State, state_id)
+  """Retrieve all City objects"""
+  state = storage.get(State, state_id)
 
-                if state is None:
-                            abort(404)
+if state is None:
+  abort(404)
 
-                                all_cities = [obj.to_dict() for obj in state.cities]
-                                    return jsonify(all_cities)
+all_cities = [obj.to_dict() for obj in state.cities]
+return jsonify(all_cities)
 
 
-                                @app_views.route('/cities/<string:city_id>', methods=['GET'],
+@app_views.route('/cities/<string:city_id>', methods=['GET'],
                                                          strict_slashes=False)
-                                @swag_from('documentation/city/get_id.yml', methods=['GET'])
-                                def get_city(city_id):
-                                        """Retrieve City object by id"""
-                                            city = storage.get(City, city_id)
+@swag_from('documentation/city/get_id.yml', methods=['GET'])
+def get_city(city_id):
+  """Retrieve City object by id"""
+  city = storage.get(City, city_id)
 
-                                                if city is None:
-                                                            abort(404)
+if city is None:
+  abort(404)
 
-                                                                return jsonify(city.to_dict())
+return jsonify(city.to_dict())
 
 
-                                                            # DELETE
-                                                            @app_views.route('/cities/<string:city_id>', methods=['DELETE'],
-                                                                                     strict_slashes=False)
-                                                            @swag_from('documentation/city/delete.yml', methods=['DELETE'])
-                                                            def delete_city(city_id):
-                                                                    """Deletes a City object by id"""
-                                                                        city = storage.get(City, city_id)
+# DELETE
+@app_views.route('/cities/<string:city_id>', methods=['DELETE'],
+                 strict_slashes=False)
+@swag_from('documentation/city/delete.yml', methods=['DELETE'])
+def delete_city(city_id):
+  """Deletes a City object by id"""
+  city = storage.get(City, city_id)
 
-                                                                            if city is None:
-                                                                                        abort(404)
+if city is None:
+  abort(404)
 
                                                                                             city.delete()
                                                                                                 storage.save()
