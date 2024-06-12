@@ -35,7 +35,7 @@ def get_user_id(user_id):
     return jsonify(fetch_id.to_json())
 
 
-@app_views.route('/users/<user_id>', 
+@app_views.route('/users/<user_id>',
                  strict_slashes=False, methods=['GET', 'DELETE'])
 def del_user(user_id):
     """
