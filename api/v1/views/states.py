@@ -34,7 +34,8 @@ def get_state_id(state_id):
     return jsonify(fetch_id.to_json())
 
 
-@app_views.route('/states/<state_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+@app_views.route('/states/<state_id>',
+                 strict_slashes=False, methods=['GET', 'DELETE'])
 def del_state(state_id):
     """
         This delete a state object

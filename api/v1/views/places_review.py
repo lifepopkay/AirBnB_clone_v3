@@ -3,7 +3,6 @@
     place views
 """
 from flask import jsonify, abort, request
-from AirBnB_clone_v2.models import review
 from models.place import Place
 from api.v1.views import app_views
 from models import storage
@@ -13,7 +12,7 @@ from models.review import Review
 @app_views.route('places/<places_id>/reviews',
                  strict_slashes=False, methods=['GET'])
 def get_place_of_place(places_id):
-    """ 
+    """
         Retrieves all place of a Place
         object
     """
@@ -42,7 +41,8 @@ def get_place_id(review_id):
     return jsonify(fetch_id.to_json())
 
 
-@app_views.route('/reviews/<review_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+@app_views.route('/reviews/<review_id>',
+                 strict_slashes=False, methods=['GET', 'DELETE'])
 def del_place(review_id):
     """
         This delete a place object
@@ -57,7 +57,8 @@ def del_place(review_id):
     return jsonify({}), 200
 
 
-@app_views.route('/places/<places_id>/reviews', strict_slashes=False, methods=['POST'])
+@app_views.route('/places/<places_id>/reviews',
+                 strict_slashes=False, methods=['POST'])
 def create_place(place_id):
     """
         This create a new instance of place
