@@ -78,6 +78,12 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_all_no_class(self):
         """Test that all returns all rows when no class is passed"""
+        state = {"name": "Oyo"}
+        new_s = State(**state)
+        models.storage.new(new_s)
+        models.storage.save()
+
+        session =models.storage._DB
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
