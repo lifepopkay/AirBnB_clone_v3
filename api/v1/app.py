@@ -1,14 +1,10 @@
 #!/usr/bin/python3
-"""
-The RESTful api starts here. The api aids data access in the app.
-"""
-from os import getenv
-
-from flask import Flask, jsonify
+""" Script that imports a Blueprint and runs Flask """
+from flask import Flask, make_response, jsonify
 from flask_cors import CORS
-
-from api.v1.views import app_views
 from models import storage
+from api.v1.views import app_views
+from os import getenv
 
 app = Flask(__name__)
 
