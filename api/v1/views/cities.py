@@ -1,98 +1,100 @@
 #!/usr/bin/python3
-"""City module"""
-from api.v1.views import app_views
-from flask import jsonify, abort, request, make_response
-from models import storage
+"""
+    City views
+"""
+from flask import jsonify, abort, request
 from models.state import State
+from api.v1.views import app_views
+from models import storage
 from models.city import City
-from flasgger.utils import swag_from
 
 
-# GET
-@app_views.route('/states/<string:state_id>/cities',
-                         methods=['GET'], strict_slashes=False)
-@swag_from('documentation/city/get.yml', methods=['GET'])
-def get_cities(state_id):
-        """Retrieve all City objects"""
-            state = storage.get(State, state_id)
+@app_views.route('states/<state_id>/cities',
+                 strict_slashes=False, methods=['GET'])
+def get_city_by_State(state_id):
+    """ 
+        Retrieves all city of a state
+        object
+    """
+    all_city = []
+    state_obj = storage.get(State, str(state_id))
 
-                if state is None:
-                            abort(404)
+    if state_obj is None:
+        abort(404)
 
-                                all_cities = [obj.to_dict() for obj in state.cities]
-                                    return jsonify(all_cities)
+    for city in state_obj.cities:
+        all_city.append(city.to_dict())
 
-
-                                @app_views.route('/cities/<string:city_id>', methods=['GET'],
-                                                         strict_slashes=False)
-                                @swag_from('documentation/city/get_id.yml', methods=['GET'])
-                                def get_city(city_id):
-                                        """Retrieve City object by id"""
-                                            city = storage.get(City, city_id)
-
-                                                if city is None:
-                                                            abort(404)
-
-                                                                return jsonify(city.to_dict())
+    return jsonify(all_city)
 
 
-                                                            # DELETE
-                                                            @app_views.route('/cities/<string:city_id>', methods=['DELETE'],
-                                                                                     strict_slashes=False)
-                                                            @swag_from('documentation/city/delete.yml', methods=['DELETE'])
-                                                            def delete_city(city_id):
-                                                                    """Deletes a City object by id"""
-                                                                        city = storage.get(City, city_id)
+@app_views.route('/cities/<city_id>', strict_slashes=False, methods=['GET'])
+def get_City_id(city_id):
+    """
+        Retrives City by its ID
+    """
+    fetch_id = storage.get(City, str(city_id))
 
-                                                                            if city is None:
-                                                                                        abort(404)
+    if fetch_id is None:
+        abort(404)
 
-                                                                                            city.delete()
-                                                                                                storage.save()
-                                                                                                    return jsonify({})
+    return jsonify(fetch_id.to_json())
 
 
-                                                                                                # POST
-                                                                                                @app_views.route('/states/<string:state_id>/cities', methods=['POST'],
-                                                                                                                         strict_slashes=False)
-                                                                                                @swag_from('documentation/city/post.yml', methods=['POST'])
-                                                                                                def create_city(state_id):
-                                                                                                        """Creates new City object"""
-                                                                                                            state = storage.get(State, state_id)
+@app_views.route('/cities/<city_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+def del_City(City_id):
+    """
+        This delete a City object
+    """
+    fetch_id = storage.get(City, str(City_id))
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                if state is None:
-                                                                                                                            abort(404)
+    storage.delete(fetch_id)
+    storage.save()
 
-                                                                                                                                if not request.get_json():
-                                                                                                                                            return make_response(jsonify({"error": "Not a JSON"}), 400)
-
-                                                                                                                                            if 'name' not in request.get_json():
-                                                                                                                                                        return make_response(jsonify({"error": "Missing name"}), 400)
-
-                                                                                                                                                        json_obj = request.get_json()
-                                                                                                                                                            obj = City(**json_obj)
-                                                                                                                                                                obj.state_id = state.id
-                                                                                                                                                                    obj.save()
-                                                                                                                                                                        return jsonify(obj.to_dict()), 201
+    return jsonify({}), 200
 
 
-                                                                                                                                                                    # PUT
-                                                                                                                                                                    @app_views.route('/cities/<string:city_id>', methods=['PUT'],
-                                                                                                                                                                                             strict_slashes=False)
-                                                                                                                                                                    @swag_from('documentation/city/put.yml', methods=['PUT'])
-                                                                                                                                                                    def update_city(city_id):
-                                                                                                                                                                            """Updates City object"""
-                                                                                                                                                                                if not request.get_json():
-                                                                                                                                                                                            return make_response(jsonify({"error": "Not a JSON"}), 400)
+@app_views.route('/states/<state_id>/cities', strict_slashes=False, methods=['POST'])
+def create_City(state_id):
+    """
+        This create a new instance of City
+    """
+    City_json = request.get_json()
+    fetch_state = storage.get(state_id)
+    if fetch_state is None:
+        abort(404)
 
-                                                                                                                                                                                            obj = storage.get(City, city_id)
+    if City_json is None:
+        abort(400, 'Not a JSON')
 
-                                                                                                                                                                                                if obj is None:
-                                                                                                                                                                                                            abort(404)
+    if "name" not in City_json:
+        abort(400, 'Missing name')
 
-                                                                                                                                                                                                                for key, value in request.get_json().items():
-                                                                                                                                                                                                                            if key not in ['id', 'state_id', 'created_at', 'updated_at']:
-                                                                                                                                                                                                                                            setattr(obj, key, value)
+    City_json["state_id"] = state_id
 
-                                                                                                                                                                                                                                                storage.save()
-                                                                                                                                                                                                                                                    return jsonify(obj.to_dict())
+    obj = City(**City_json)
+    storage.new(obj)
+    storage.save()
+
+    return jsonify(obj.to_dict()), 200
+
+
+@app_views.route('/Citys/<City_id>', strict_slashes=False,
+                 methods=['PUT'])
+def update_City(City_id):
+    fetch_obj = storage.get(City, str(City_id))
+    if fetch_obj is None:
+        abort(404)
+
+    data = request.get_json()
+    if data is None:
+        abort(400, 'Not a JSON')
+
+    for key, val in data.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(fetch_obj, key, val)
+
+    storage.save()
+    return jsonify(fetch_obj.to_dict()), 200
