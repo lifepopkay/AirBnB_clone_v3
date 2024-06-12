@@ -90,11 +90,11 @@ class TestFileStorage(unittest.TestCase):
 
 class TestFile(unittest.TestCase):
     """Test new methods"""
-    
+
     def test_get(self):
         """test get method"""
         pass
-    
+
     def test_count(self):
         """test count method"""
         pass

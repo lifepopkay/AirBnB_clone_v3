@@ -12,19 +12,19 @@ classes = {"Amenity": "amenities", "City": "cities",
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def view_status():
-    """Returns a JSON"""
-    response = jsonify({"status": "OK"})
-    response.headers["Content-Type"] = "application/json"
-    response.status_code = 200
-    return response
+  """Returns a JSON"""
+  response = jsonify({"status": "OK"})
+  response.headers["Content-Type"] = "application/json"
+  response.status_code = 200
+  return response
 
 
 @app_views.route('/stats', method=['GET'], strict_slashes=False)
 def storage_stats():
-    """Returns a JSON"""
-    dict = {}
-    for cls, name in classes.items():
-        dict.update({name: storage.count(cls)})
-        response = jsonify(dict)
-        response.headers["Content-Type"] = "application/json"
-        return response
+  """Returns a JSON"""
+  dict = {}
+  for cls, name in classes.items():
+    dict.update({name: storage.count(cls)})
+    response = jsonify(dict)
+    response.headers["Content-Type"] = "application/json"
+    return response
