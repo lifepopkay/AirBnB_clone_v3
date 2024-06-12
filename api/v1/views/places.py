@@ -3,8 +3,6 @@
     City views
 """
 from flask import jsonify, abort, request
-from numpy import place
-from AirBnB_clone_v2.models import city
 from models.place import Place
 from api.v1.views import app_views
 from models import storage
@@ -14,7 +12,7 @@ from models.city import City
 @app_views.route('cities/<city_id>/places',
                  strict_slashes=False, methods=['GET'])
 def get_place_of_city(city_id):
-    """ 
+    """
         Retrieves all city of a Place
         object
     """
@@ -43,7 +41,8 @@ def get_place_id(place_id):
     return jsonify(fetch_id.to_json())
 
 
-@app_views.route('/places/<place_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+@app_views.route('/places/<place_id>',
+                 strict_slashes=False, methods=['GET', 'DELETE'])
 def del_place(place_id):
     """
         This delete a City object
@@ -58,7 +57,8 @@ def del_place(place_id):
     return jsonify({}), 200
 
 
-@app_views.route('/cities/<city_id>/places', strict_slashes=False, methods=['POST'])
+@app_views.route('/cities/<city_id>/places',
+                 strict_slashes=False, methods=['POST'])
 def create_place(place_id):
     """
         This create a new instance of City

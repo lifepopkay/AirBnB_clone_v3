@@ -12,7 +12,7 @@ from models.city import City
 @app_views.route('states/<state_id>/cities',
                  strict_slashes=False, methods=['GET'])
 def get_city_by_State(state_id):
-    """ 
+    """
         Retrieves all city of a state
         object
     """
@@ -41,7 +41,8 @@ def get_City_id(city_id):
     return jsonify(fetch_id.to_json())
 
 
-@app_views.route('/cities/<city_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+@app_views.route('/cities/<city_id>', strict_slashes=False,
+                 methods=['GET', 'DELETE'])
 def del_City(City_id):
     """
         This delete a City object
@@ -56,7 +57,8 @@ def del_City(City_id):
     return jsonify({}), 200
 
 
-@app_views.route('/states/<state_id>/cities', strict_slashes=False, methods=['POST'])
+@app_views.route('/states/<state_id>/cities', strict_slashes=False,
+                 methods=['POST'])
 def create_City(state_id):
     """
         This create a new instance of City

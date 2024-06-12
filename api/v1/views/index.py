@@ -4,8 +4,8 @@ from flask import jsonify, make_response
 from api.v1.views import app_views
 from models import storage
 
-classes = {"Amenity": "amenities","City": "cities",
-           "Place": "places","Review": "reviews",
+classes = {"Amenity": "amenities", "City": "cities",
+           "Place": "places", "Review": "reviews",
            "State": "states",
            "User": "users"}
 
@@ -16,7 +16,6 @@ def view_status():
     response = jsonify({"status": "OK"})
     response.headers["Content-Type"] = "application/json"
     response.status_code = 200
-    
     return response
 
 
