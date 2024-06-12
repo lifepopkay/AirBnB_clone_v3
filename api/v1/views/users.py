@@ -1,86 +1,91 @@
 #!/usr/bin/python3
-"""States views"""
-from flask import jsonify, make_response, abort, request
+"""
+    user views
+"""
+from re import U
+from flask import jsonify, abort, request
 from api.v1.views import app_views
 from models import storage
 from models.user import User
 
 
-@app_views.route('/users',
-                         strict_slashes=False,
-                                          methods=['GET', 'POST'])
-def view_users():
-        """Returns the list of all User objects"""
-            if request.method == 'POST':
-                        # Get the attributes from the request
-                                data = request.get_json()
+@app_views.route('/users', strict_slashes=False, methods=['GET'])
+def get_user():
+    """
+        Retrives all users objects
+    """
+    all_user = []
+    user_in_storage = storage.all(User)
+    for obj in user_in_storage.values():
+        all_user.append(obj.to_json())
 
-                                        if isinstance(data, dict):
-                                                        pass
-                                                            else:
-                                                                            return jsonify({"error": "Not a JSON"}), 400
-
-                                                                                if 'id' in data.keys():
-                                                                                                data.pop("id")
-                                                                                                        if 'created_at' in data.keys():
-                                                                                                                        data.pop("created_at")
-                                                                                                                                if 'updated_at' in data.keys():
-                                                                                                                                                data.pop("updated_at")
-
-                                                                                                                                                        if 'email' not in data.keys():
-                                                                                                                                                                        return jsonify({'error': 'Missing email'}), 400
-                                                                                                                                                                            if 'password' not in data.keys():
-                                                                                                                                                                                            return jsonify({'error': 'Missing password'}), 400
-
-                                                                                                                                                                                                # Create the object
-                                                                                                                                                                                                        obj = User(**data)
-
-                                                                                                                                                                                                                # Save the object in storage
-                                                                                                                                                                                                                        storage.new(obj)
-                                                                                                                                                                                                                                storage.save()
-                                                                                                                                                                                                                                        return jsonify(obj.to_dict()), 201
-
-                                                                                                                                                                                                                                        if request.method == 'GET':
-                                                                                                                                                                                                                                                    users = storage.all("User")
-                                                                                                                                                                                                                                                            list = []
-                                                                                                                                                                                                                                                                    for name, user in users.items():
-                                                                                                                                                                                                                                                                                    list.append(user.to_dict())
-                                                                                                                                                                                                                                                                                            return jsonify(list)
+    return jsonify(all_user)
 
 
-                                                                                                                                                                                                                                                                                        @app_views.route('/users/<id>',
-                                                                                                                                                                                                                                                                                                                 strict_slashes=False,
-                                                                                                                                                                                                                                                                                                                                  methods=['GET', 'DELETE', 'PUT'])
-                                                                                                                                                                                                                                                                                        def view_user_id(id):
-                                                                                                                                                                                                                                                                                                """Returns a list of all User objects, or delete an
-                                                                                                                                                                                                                                                                                                    object if a given id
-                                                                                                                                                                                                                                                                                                        """
-                                                                                                                                                                                                                                                                                                            user = storage.get(User, id)
+@app_views.route('/users/<user_id>', strict_slashes=False, methods=['GET'])
+def get_user_id(user_id):
+    """
+        Retrives user by its ID
+    """
+    fetch_id = storage.get(User, str(user_id))
 
-                                                                                                                                                                                                                                                                                                                if user is None:
-                                                                                                                                                                                                                                                                                                                            return abort(404)
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                                                                                                                                                                                                                            if request.method == 'GET':
+    return jsonify(fetch_id.to_json())
 
-                                                                                                                                                                                                                                                                                                                                        return jsonify(user.to_dict())
 
-                                                                                                                                                                                                                                                                                                                                        if request.method == 'DELETE':
+@app_views.route('/users/<user_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+def del_user(user_id):
+    """
+        This delete a user object
+    """
+    fetch_id = storage.get(User, str(user_id))
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                                                                                                                                                                                                                                                    storage.delete(user)
-                                                                                                                                                                                                                                                                                                                                                            storage.save()
-                                                                                                                                                                                                                                                                                                                                                                    return jsonify({}), 200
+    storage.delete(fetch_id)
+    storage.save()
 
-                                                                                                                                                                                                                                                                                                                                                                    if request.method == 'PUT':
-                                                                                                                                                                                                                                                                                                                                                                                data = request.get_json()
-                                                                                                                                                                                                                                                                                                                                                                                        if isinstance(data, dict):
-                                                                                                                                                                                                                                                                                                                                                                                                        pass
-                                                                                                                                                                                                                                                                                                                                                                                                            else:
-                                                                                                                                                                                                                                                                                                                                                                                                                            return jsonify({"error": "Not a JSON"}), 400
+    return jsonify({}), 200
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                for key, value in data.items():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                if key not in ["id", "email", "created_at", "updated_at"]:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    setattr(user, key, value)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            # This save is possibly not working to obtain
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    # permanent changes in the data base
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            storage.save()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    return jsonify(user.to_dict())
+
+@app_views.route('/users', strict_slashes=False, methods=['POST'])
+def create_user():
+    """
+        This create a new instance of user
+    """
+    user_json = request.get_json()
+    if user_json is None:
+        abort(400, 'Not a JSON')
+
+    if "email" not in user_json:
+        abort(400, 'Missing email')
+
+    if "password" not in user_json:
+        abort(400, 'Missing password')
+
+    obj = User(**user_json)
+    storage.new(obj)
+    storage.save()
+
+    return jsonify(obj.to_dict()), 200
+
+
+@app_views.route('/users/<user_id>', strict_slashes=False,
+                 methods=['PUT'])
+def update_user(user_id):
+    fetch_obj = storage.get(User, str(user_id))
+    if fetch_obj is None:
+        abort(404)
+
+    data = request.get_json()
+    if data is None:
+        abort(400, 'Not a JSON')
+
+    for key, val in data.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(fetch_obj, key, val)
+
+    storage.save()
+    return jsonify(fetch_obj.to_dict()), 200

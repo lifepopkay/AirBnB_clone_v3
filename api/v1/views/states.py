@@ -1,89 +1,87 @@
 #!/usr/bin/python3
-"""States views"""
-from flask import jsonify, make_response, abort, request
+"""
+    state views
+"""
+from flask import jsonify, abort, request
 from api.v1.views import app_views
 from models import storage
 from models.state import State
 
 
-@app_views.route('/states',
-                         strict_slashes=False,
-                                          methods=['GET', 'POST'])
-def view_states():
-        """Returns the list of all State objects"""
-            if request.method == 'POST':
+@app_views.route('/states', strict_slashes=False, methods=['GET'])
+def get_state():
+    """
+        Retrives all states objects
+    """
+    all_state = []
+    state_in_storage = storage.all(State)
+    for obj in state_in_storage.values():
+        all_state.append(obj.to_json())
 
-                        # Get the attributes from the request
-                                data = request.get_json()
-
-                                        if isinstance(data, dict):
-                                                        pass
-                                                            else:
-                                                                            return (jsonify({"error": "Not a JSON"}), 400)
-
-                                                                                if 'name' not in data.keys():
-                                                                                                return jsonify({'error': 'Missing name'}), 400
-
-                                                                                                    if 'id' in data.keys():
-                                                                                                                    data.pop("id")
-                                                                                                                            if 'created_at' in data.keys():
-                                                                                                                                            data.pop("created_at")
-                                                                                                                                                    if 'updated_at' in data.keys():
-                                                                                                                                                                    data.pop("updated_at")
-
-                                                                                                                                                                            # Create the object
-                                                                                                                                                                                    obj = State(**data)
-
-                                                                                                                                                                                            # Save the object in storage
-                                                                                                                                                                                                    storage.new(obj)
-                                                                                                                                                                                                            storage.save()
-                                                                                                                                                                                                                    return jsonify(obj.to_dict()), 201
-
-                                                                                                                                                                                                                    if request.method == 'GET':
-                                                                                                                                                                                                                                states = storage.all("State")
-                                                                                                                                                                                                                                        list = []
-                                                                                                                                                                                                                                                for name, state in states.items():
-                                                                                                                                                                                                                                                                list.append(state.to_dict())
-                                                                                                                                                                                                                                                                        return jsonify(list)
+    return jsonify(all_state)
 
 
-                                                                                                                                                                                                                                                                    @app_views.route('/states/<id>',
-                                                                                                                                                                                                                                                                                             strict_slashes=False,
-                                                                                                                                                                                                                                                                                                              methods=['GET', 'DELETE', 'PUT'])
-                                                                                                                                                                                                                                                                    def view_state(id):
-                                                                                                                                                                                                                                                                            """Returns a list of all State objects, or delete an
-                                                                                                                                                                                                                                                                                object if a given id
-                                                                                                                                                                                                                                                                                    """
-                                                                                                                                                                                                                                                                                        state = storage.get(State, id)
+@app_views.route('/states/<state_id>', strict_slashes=False, methods=['GET'])
+def get_state_id(state_id):
+    """
+        Retrives state by its ID
+    """
+    fetch_id = storage.get(State, str(state_id))
 
-                                                                                                                                                                                                                                                                                            if state is None:
-                                                                                                                                                                                                                                                                                                        return abort(404)
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                                                                                                                                                                                                        if request.method == 'GET':
-                                                                                                                                                                                                                                                                                                                    state = state.to_dict()
-                                                                                                                                                                                                                                                                                                                            return jsonify(state)
+    return jsonify(fetch_id.to_json())
 
-                                                                                                                                                                                                                                                                                                                            if request.method == 'DELETE':
-                                                                                                                                                                                                                                                                                                                                        storage.delete(state)
-                                                                                                                                                                                                                                                                                                                                                storage.save()
-                                                                                                                                                                                                                                                                                                                                                        return jsonify({}), 200
 
-                                                                                                                                                                                                                                                                                                                                                        if request.method == 'PUT':
-                                                                                                                                                                                                                                                                                                                                                                    data = request.get_json()
-                                                                                                                                                                                                                                                                                                                                                                            if isinstance(data, dict):
-                                                                                                                                                                                                                                                                                                                                                                                            pass
-                                                                                                                                                                                                                                                                                                                                                                                                else:
-                                                                                                                                                                                                                                                                                                                                                                                                                return (jsonify({"error": "Not a JSON"}), 400)
+@app_views.route('/states/<state_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+def del_state(state_id):
+    """
+        This delete a state object
+    """
+    fetch_id = storage.get(State, str(state_id))
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                                                                                                                                                                                                                                                                                                                    if 'id' in data.keys():
-                                                                                                                                                                                                                                                                                                                                                                                                                                    data.pop("id")
-                                                                                                                                                                                                                                                                                                                                                                                                                                            if 'created_at' in data.keys():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                            data.pop("created_at")
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                    if 'updated_at' in data.keys():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    data.pop("updated_at")
+    storage.delete(fetch_id)
+    storage.save()
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            for key, value in data.items():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            setattr(state, key, value)
+    return jsonify({}), 200
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    storage.save()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            return jsonify(state.to_dict())
+
+@app_views.route('/states', strict_slashes=False, methods=['POST'])
+def create_state():
+    """
+        This create a new instance of state
+    """
+    state_json = request.get_json()
+    if state_json is None:
+        abort(400, 'Not a JSON')
+
+    if "name" not in state_json:
+        abort(400, 'Missing name')
+
+    obj = State(**state_json)
+    storage.new(obj)
+    storage.save()
+
+    return jsonify(obj.to_dict()), 200
+
+
+@app_views.route('/states/<state_id>', strict_slashes=False,
+                 methods=['PUT'])
+def update_state(state_id):
+    fetch_obj = storage.get(State, str(state_id))
+    if fetch_obj is None:
+        abort(404)
+
+    data = request.get_json()
+    if data is None:
+        abort(400, 'Not a JSON')
+
+    for key, val in data.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(fetch_obj, key, val)
+
+    storage.save()
+    return jsonify(fetch_obj.to_dict()), 200

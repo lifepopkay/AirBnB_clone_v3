@@ -1,104 +1,105 @@
 #!/usr/bin/python3
-"""States views"""
-from flask import jsonify, make_response, abort, request
+"""
+    place views
+"""
+from flask import jsonify, abort, request
+from AirBnB_clone_v2.models import review
+from models.place import Place
 from api.v1.views import app_views
 from models import storage
-from models.place import Place
-from models.city import City
 from models.review import Review
-from models.user import User
 
 
-@app_views.route('/places/<id>/reviews',
-                         strict_slashes=False,
-                                          methods=['GET', 'POST'])
-def view_reviews_of_place(id):
-        """Returns a list of all reviews of a place, or delete a
-            review if a given id
-                """
-                    place = storage.get(Place, id)
+@app_views.route('places/<places_id>/reviews',
+                 strict_slashes=False, methods=['GET'])
+def get_place_of_place(places_id):
+    """ 
+        Retrieves all place of a Place
+        object
+    """
+    all_place = []
+    place_obj = storage.get(Place, str(places_id))
 
-                        if place is None:
-                                    return abort(404)
+    if place_obj is None:
+        abort(404)
 
-                                    if request.method == 'GET':
+    for place in place_obj.places:
+        all_place.append(place.to_dict())
 
-                                                list = []
-                                                        for review in place.reviews:
-                                                                        list.append(review.to_dict())
-                                                                                return jsonify(list)
-
-                                                                                if request.method == 'POST':
-                                                                                            # Get the attributes from the request
-                                                                                                    data = request.get_json()
-                                                                                                            user = storage.get(User, id)
-
-                                                                                                                    if user is None:
-                                                                                                                                    return abort(404)
-
-                                                                                                                                        if isinstance(data, dict):
-                                                                                                                                                        pass
-                                                                                                                                                            else:
-                                                                                                                                                                            return jsonify({"error": "Not a JSON"}), 400
-
-                                                                                                                                                                                if 'user_id' not in data.keys():
-                                                                                                                                                                                                return jsonify({'error': 'Missing user_id'}), 400
-
-                                                                                                                                                                                                    if 'text' not in data.keys():
-                                                                                                                                                                                                                    return jsonify({'error': 'Missing text'}), 400
-
-                                                                                                                                                                                                                        if 'id' in data.keys():
-                                                                                                                                                                                                                                        data.pop("id")
-                                                                                                                                                                                                                                                if 'created_at' in data.keys():
-                                                                                                                                                                                                                                                                data.pop("created_at")
-                                                                                                                                                                                                                                                                        if 'updated_at' in data.keys():
-                                                                                                                                                                                                                                                                                        data.pop("updated_at")
-
-                                                                                                                                                                                                                                                                                                data.update({"place_id": id})
-
-                                                                                                                                                                                                                                                                                                        # Create the object
-                                                                                                                                                                                                                                                                                                                obj = Review(**data)
-
-                                                                                                                                                                                                                                                                                                                        # Save the object in storage
-                                                                                                                                                                                                                                                                                                                                storage.new(obj)
-                                                                                                                                                                                                                                                                                                                                        storage.save()
-                                                                                                                                                                                                                                                                                                                                                return jsonify(obj.to_dict()), 201
+    return jsonify(all_place)
 
 
-                                                                                                                                                                                                                                                                                                                                            @app_views.route('/review/<id>',
-                                                                                                                                                                                                                                                                                                                                                                     strict_slashes=False,
-                                                                                                                                                                                                                                                                                                                                                                                      methods=['GET', 'DELETE', 'PUT'])
-                                                                                                                                                                                                                                                                                                                                            def view_review_id(id):
-                                                                                                                                                                                                                                                                                                                                                    """Returns or erases a city"""
-                                                                                                                                                                                                                                                                                                                                                        review_obj = storage.get(Review, id)
+@app_views.route('/reviews/<review_id>', strict_slashes=False, methods=['GET'])
+def get_place_id(review_id):
+    """
+        Retrives place by its ID
+    """
+    fetch_id = storage.get(Review, str(review_id))
 
-                                                                                                                                                                                                                                                                                                                                                            if review_obj is None:
-                                                                                                                                                                                                                                                                                                                                                                        return abort(404)
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                                                                                                                                                                                                                                                                        if request.method == 'GET':
-                                                                                                                                                                                                                                                                                                                                                                                    return jsonify(review_obj.to_dict())
+    return jsonify(fetch_id.to_json())
 
-                                                                                                                                                                                                                                                                                                                                                                                    if request.method == 'DELETE':
-                                                                                                                                                                                                                                                                                                                                                                                                storage.delete(review_obj)
-                                                                                                                                                                                                                                                                                                                                                                                                        storage.save()
-                                                                                                                                                                                                                                                                                                                                                                                                                return jsonify({}), 200
 
-                                                                                                                                                                                                                                                                                                                                                                                                                if request.method == 'PUT':
-                                                                                                                                                                                                                                                                                                                                                                                                                            data = request.get_json()
-                                                                                                                                                                                                                                                                                                                                                                                                                                    if isinstance(data, dict):
-                                                                                                                                                                                                                                                                                                                                                                                                                                                    pass
-                                                                                                                                                                                                                                                                                                                                                                                                                                                        else:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                        return jsonify({"error": "Not a JSON"}), 400
+@app_views.route('/reviews/<review_id>', strict_slashes=False, methods=['GET', 'DELETE'])
+def del_place(review_id):
+    """
+        This delete a place object
+    """
+    fetch_id = storage.get(Place, str(review_id))
+    if fetch_id is None:
+        abort(404)
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if 'id' in data.keys():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            data.pop("id")
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    if 'created_at' in data.keys():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    data.pop("created_at")
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            if 'updated_at' in data.keys():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            data.pop("updated_at")
+    storage.delete(fetch_id)
+    storage.save()
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    for key, value in data.items():
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    setattr(review_obj, key, value)
+    return jsonify({}), 200
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            storage.save()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    return jsonify(review_obj.to_dict())
+
+@app_views.route('/places/<places_id>/reviews', strict_slashes=False, methods=['POST'])
+def create_place(place_id):
+    """
+        This create a new instance of place
+    """
+    review_json = request.get_json()
+
+    fetch_Place = storage.get(place_id)
+    if fetch_Place is None:
+        abort(404)
+
+    if review_json is None:
+        abort(400, 'Not a JSON')
+
+    if "user_id" not in review_json:
+        abort(400, 'Missing user_id')
+
+    if "text" not in review_json:
+        abort(400, 'Missing text')
+
+    review_json["place_id"] = place_id
+
+    obj = Review(**review_json)
+    storage.new(obj)
+    storage.save()
+
+    return jsonify(obj.to_dict()), 200
+
+
+@app_views.route('/reviews/<review_id>', strict_slashes=False,
+                 methods=['PUT'])
+def update_place(review_id):
+    fetch_obj = storage.get(Review, str(review_id))
+    if fetch_obj is None:
+        abort(404)
+
+    data = request.get_json()
+    if data is None:
+        abort(400, 'Not a JSON')
+
+    for key, val in data.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(fetch_obj, key, val)
+
+    storage.save()
+    return jsonify(fetch_obj.to_dict()), 200
