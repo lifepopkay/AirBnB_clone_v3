@@ -27,6 +27,7 @@ def not_found(error):
     data = {"error": "Not found"}
     response = jsonify(data)
     response.status_code = 404
+    return response
 
 
 if __name__ == "__main__":
