@@ -28,7 +28,8 @@ def get_city_by_State(state_id):
     return jsonify(all_city)
 
 
-@app_views.route('/cities/<city_id>', strict_slashes=False, methods=['GET'])
+@app_views.route('/cities/<city_id>',
+                 strict_slashes=False, methods=['GET'])
 def get_City_id(city_id):
     """
       Retrives City by its ID
