@@ -1,8 +1,9 @@
 #!/usr/bin/python3
-""" Script that imports a 
-    Blueprint and runs Flask
-    listining to port
-    0.0.0.0
+"""
+Script that imports a 
+Blueprint and runs Flask
+listining to port
+0.0.0.0
 """
 
 from flask import Flask, make_response, jsonify
