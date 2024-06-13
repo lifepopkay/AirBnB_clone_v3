@@ -89,10 +89,3 @@ class FileStorage:
     def count(self, cls=None):
         """ Count number of object """
         return len(self.all(cls))
-
-        """
-        count of how many instances of a class
-        :param cls: class name
-        :return: count of instances of a class
-        """
-        return len(self.all(cls))

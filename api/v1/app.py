@@ -1,19 +1,18 @@
 #!/usr/bin/python3
+""" Script that imports a 
+    Blueprint and runs Flask
+    listining to port
+    0.0.0.0
 """
-The RESTful api starts here. The api aids data access in the app.
-"""
-from os import getenv
 
-from flask import Flask, jsonify
-from flask_cors import CORS
-
-from api.v1.views import app_views
+from flask import Flask, make_response, jsonify
 from models import storage
+from api.v1.views import app_views
+from os import getenv
 
 app = Flask(__name__)
 
 app.register_blueprint(app_views)
-CORS(app,  resources={r"/*": {"origins": "0.0.0.0"}})
 
 host = getenv("HBNB_API_HOST", "0.0.0.0")
 port = getenv("HBNB_API_PORT", "5000")

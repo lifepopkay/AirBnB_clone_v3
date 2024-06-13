@@ -3,6 +3,7 @@
 Contains the TestFileStorageDocs classes
 """
 
+from cgitb import strong
 from datetime import datetime
 import inspect
 import models
@@ -114,10 +115,42 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_get(self):
-        """test the get method"""
-        pass
+        """ Test method for obtaining an instance db storage"""
+        storage = FileStorage()
+        storage.reload()
 
+        my_state = {"name": "Kaduna"}
+        new_s = State(**my_state)
+        storage.new(new_s)
+        storage.save()
+
+        obj = storage.get(State, str(new_s.id))
+        self.assertEqual(new_s, obj)
+
+        fake_state_id = storage.get(State, 'fake_id')
+        self.assertEqual(fake_state_id, None)
+
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
-        """test count method"""
-        pass
+        """ Test method for obtaining an instance db storage"""
+        storage = FileStorage()
+        storage.reload()
+
+        my_state = {"name": "Ogun"}
+        new_s = State(**my_state)
+
+        storage.new(new_s)
+
+        city_data = {"name": "camp", "state_id": my_state.id}
+        city_ints = City(**city_data)
+
+        storage.new(city_ints)
+        storage.save()
+
+        state_occu = storage.count(State)
+        self.assertEqual(state_occu, len(storage.all()))
+
+        all_occu = storage.count()
+        self.assertEqual(all_occu, len(storage.all()))
