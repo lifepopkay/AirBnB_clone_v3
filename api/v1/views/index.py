@@ -10,7 +10,7 @@ classes = {"Amenity": "amenities", "City": "cities",
            "User": "users"}
 
 
-@app_views.route('/status', 
+@app_views.route('/status',
                  methods=['GET'], strict_slashes=False)
 def view_status():
     """Returns a JSON"""
