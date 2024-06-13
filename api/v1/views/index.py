@@ -24,9 +24,8 @@ def view_status():
                  methods=['GET'], strict_slashes=False)
 def storage_stats():
     """Returns a JSON"""
-    dict = {}
-    for cls, name in classes.items():
-        dict.update({name: storage.count(cls)})
-        response = jsonify(dict)
-        response.headers["Content-Type"] = "application/json"
-        return response
+    dict_count = {}
+    for key, val in classes.items():
+        dict_count[val] = storage.count(key)
+
+    return jsonify(dict_count)
